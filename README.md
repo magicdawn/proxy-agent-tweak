@@ -1,8 +1,12 @@
 # proxy-agent-tweak
 
-some tweak to proxy-agent
+> some tweak to proxy-agent
 
 - remove pac support. this package is heavy, because of this, proxy-agent cannot run in raycast
+
+below is the original readme
+
+---
 
 # proxy-agent
 
