@@ -1,28 +1,27 @@
-'use strict';
+'use strict'
 
 /**
  * Module dependencies.
  */
 
-var url = require('url');
-var LRU = require('lru-cache');
-var Agent = require('agent-base');
-var inherits = require('util').inherits;
-var debug = require('debug')('proxy-agent');
-var getProxyForUrl = require('proxy-from-env').getProxyForUrl;
+var url = require('url')
+var LRU = require('lru-cache')
+var Agent = require('agent-base')
+var inherits = require('util').inherits
+var debug = require('debug')('proxy-agent')
+var getProxyForUrl = require('proxy-from-env').getProxyForUrl
 
-var http = require('http');
-var https = require('https');
-var PacProxyAgent = require('pac-proxy-agent');
-var HttpProxyAgent = require('http-proxy-agent');
-var HttpsProxyAgent = require('https-proxy-agent');
-var SocksProxyAgent = require('socks-proxy-agent');
+var http = require('http')
+var https = require('https')
+var HttpProxyAgent = require('http-proxy-agent')
+var HttpsProxyAgent = require('https-proxy-agent')
+var SocksProxyAgent = require('socks-proxy-agent')
 
 /**
  * Module exports.
  */
 
-exports = module.exports = ProxyAgent;
+exports = module.exports = ProxyAgent
 
 /**
  * Number of `http.Agent` instances to cache.
@@ -31,48 +30,44 @@ exports = module.exports = ProxyAgent;
  * value could be conceived with some benchmarks.
  */
 
-var cacheSize = 20;
+var cacheSize = 20
 
 /**
  * Cache for `http.Agent` instances.
  */
 
-exports.cache = new LRU(cacheSize);
+exports.cache = new LRU(cacheSize)
 
 /**
  * Built-in proxy types.
  */
 
-exports.proxies = Object.create(null);
-exports.proxies.http = httpOrHttpsProxy;
-exports.proxies.https = httpOrHttpsProxy;
-exports.proxies.socks = SocksProxyAgent;
-exports.proxies.socks4 = SocksProxyAgent;
-exports.proxies.socks4a = SocksProxyAgent;
-exports.proxies.socks5 = SocksProxyAgent;
-exports.proxies.socks5h = SocksProxyAgent;
-
-PacProxyAgent.protocols.forEach(function (protocol) {
-  exports.proxies['pac+' + protocol] = PacProxyAgent;
-});
+exports.proxies = Object.create(null)
+exports.proxies.http = httpOrHttpsProxy
+exports.proxies.https = httpOrHttpsProxy
+exports.proxies.socks = SocksProxyAgent
+exports.proxies.socks4 = SocksProxyAgent
+exports.proxies.socks4a = SocksProxyAgent
+exports.proxies.socks5 = SocksProxyAgent
+exports.proxies.socks5h = SocksProxyAgent
 
 function httpOrHttps(opts, secureEndpoint) {
   if (secureEndpoint) {
     // HTTPS
-    return https.globalAgent;
+    return https.globalAgent
   } else {
     // HTTP
-    return http.globalAgent;
+    return http.globalAgent
   }
 }
 
 function httpOrHttpsProxy(opts, secureEndpoint) {
   if (secureEndpoint) {
     // HTTPS
-    return new HttpsProxyAgent(opts);
+    return new HttpsProxyAgent(opts)
   } else {
     // HTTP
-    return new HttpProxyAgent(opts);
+    return new HttpProxyAgent(opts)
   }
 }
 
@@ -81,35 +76,39 @@ function mapOptsToProxy(opts) {
   if (!opts) {
     return {
       uri: 'no proxy',
-      fn: httpOrHttps
-    };
+      fn: httpOrHttps,
+    }
   }
 
-  if ('string' == typeof opts) opts = url.parse(opts);
+  if ('string' == typeof opts) opts = url.parse(opts)
 
-  var proxies;
+  var proxies
   if (opts.proxies) {
-    proxies = Object.assign({}, exports.proxies, opts.proxies);
+    proxies = Object.assign({}, exports.proxies, opts.proxies)
   } else {
-    proxies = exports.proxies;
+    proxies = exports.proxies
   }
 
   // get the requested proxy "protocol"
-  var protocol = opts.protocol;
+  var protocol = opts.protocol
   if (!protocol) {
-    throw new TypeError('You must specify a "protocol" for the ' +
-                        'proxy type (' + Object.keys(proxies).join(', ') + ')');
+    throw new TypeError(
+      'You must specify a "protocol" for the ' +
+        'proxy type (' +
+        Object.keys(proxies).join(', ') +
+        ')'
+    )
   }
 
   // strip the trailing ":" if present
   if (':' == protocol[protocol.length - 1]) {
-    protocol = protocol.substring(0, protocol.length - 1);
+    protocol = protocol.substring(0, protocol.length - 1)
   }
 
   // get the proxy `http.Agent` creation function
-  var proxyFn = proxies[protocol];
+  var proxyFn = proxies[protocol]
   if ('function' != typeof proxyFn) {
-    throw new TypeError('unsupported proxy protocol: "' + protocol + '"');
+    throw new TypeError('unsupported proxy protocol: "' + protocol + '"')
   }
 
   // format the proxy info back into a URI, since an opts object
@@ -122,7 +121,7 @@ function mapOptsToProxy(opts) {
       slashes: true,
       auth: opts.auth,
       hostname: opts.hostname || opts.host,
-      port: opts.port
+      port: opts.port,
     }),
     fn: proxyFn,
   }
@@ -141,60 +140,65 @@ function mapOptsToProxy(opts) {
  * @api public
  */
 
-function ProxyAgent (opts) {
-  if (!(this instanceof ProxyAgent)) return new ProxyAgent(opts);
-  debug('creating new ProxyAgent instance: %o', opts);
-  Agent.call(this);
+function ProxyAgent(opts) {
+  if (!(this instanceof ProxyAgent)) return new ProxyAgent(opts)
+  debug('creating new ProxyAgent instance: %o', opts)
+  Agent.call(this)
 
   if (opts) {
-    var proxy = mapOptsToProxy(opts);
-    this.proxy = proxy.opts;
-    this.proxyUri = proxy.uri;
-    this.proxyFn = proxy.fn;
+    var proxy = mapOptsToProxy(opts)
+    this.proxy = proxy.opts
+    this.proxyUri = proxy.uri
+    this.proxyFn = proxy.fn
   }
 }
-inherits(ProxyAgent, Agent);
+inherits(ProxyAgent, Agent)
 
 /**
  *
  */
 
-ProxyAgent.prototype.callback = function(req, opts, fn) {
-  var proxyOpts = this.proxy;
-  var proxyUri = this.proxyUri;
-  var proxyFn = this.proxyFn;
+ProxyAgent.prototype.callback = function (req, opts, fn) {
+  var proxyOpts = this.proxy
+  var proxyUri = this.proxyUri
+  var proxyFn = this.proxyFn
 
   // if we did not instantiate with a proxy, set one per request
   if (!proxyOpts) {
-    var urlOpts = getProxyForUrl(opts);
-    var proxy = mapOptsToProxy(urlOpts, opts);
-    proxyOpts = proxy.opts;
-    proxyUri = proxy.uri;
-    proxyFn = proxy.fn;
+    var urlOpts = getProxyForUrl(opts)
+    var proxy = mapOptsToProxy(urlOpts, opts)
+    proxyOpts = proxy.opts
+    proxyUri = proxy.uri
+    proxyFn = proxy.fn
   }
 
   // create the "key" for the LRU cache
-  var key = proxyUri;
-  if (opts.secureEndpoint) key += ' secure';
+  var key = proxyUri
+  if (opts.secureEndpoint) key += ' secure'
 
   // attempt to get a cached `http.Agent` instance first
-  var agent = exports.cache.get(key);
+  var agent = exports.cache.get(key)
   if (!agent) {
     // get an `http.Agent` instance from protocol-specific agent function
-    agent = proxyFn(proxyOpts, opts.secureEndpoint);
+    agent = proxyFn(proxyOpts, opts.secureEndpoint)
     if (agent) {
-      exports.cache.set(key, agent);
+      exports.cache.set(key, agent)
     }
   } else {
-    debug('cache hit with key: %o', key);
+    debug('cache hit with key: %o', key)
   }
 
   if (!proxyOpts) {
-    agent.addRequest(req, opts);
+    agent.addRequest(req, opts)
   } else {
     // XXX: agent.callback() is an agent-base-ism
-    agent.callback(req, opts)
-      .then(function(socket) { fn(null, socket); })
-      .catch(function(error) { fn(error); });
+    agent
+      .callback(req, opts)
+      .then(function (socket) {
+        fn(null, socket)
+      })
+      .catch(function (error) {
+        fn(error)
+      })
   }
 }
