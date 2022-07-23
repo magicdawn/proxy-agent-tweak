@@ -2,11 +2,15 @@
 
 > some tweak to proxy-agent
 
-- remove pac support. this package is heavy, because of this, proxy-agent cannot run in raycast
+- remove pac support. this package is heavy, because of pac support, proxy-agent cannot run in raycast
 
-below is the original readme
+## CHANGELOG
+
+[CHANGELOG.md](CHANGELOG.md)
 
 ---
+
+## <p>below is the original readme</p>
 
 # proxy-agent
 

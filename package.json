@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/TooTallNate/node-proxy-agent.git"
+    "url": "git://github.com/magicdawn/proxy-agent-tweak.git"
   },
   "keywords": [
     "http",
@@ -22,19 +22,18 @@
     "proxy",
     "cache"
   ],
-  "author": "Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
+  "author": "magicdawn",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/TooTallNate/node-proxy-agent/issues"
+    "url": "https://github.com/magicdawn/proxy-agent-tweak/issues"
   },
-  "homepage": "https://github.com/TooTallNate/node-proxy-agent",
+  "homepage": "https://github.com/magicdawn/proxy-agent-tweak",
   "dependencies": {
     "agent-base": "^6.0.0",
     "debug": "4",
     "http-proxy-agent": "^4.0.0",
     "https-proxy-agent": "^5.0.0",
     "lru-cache": "^5.1.1",
-    "pac-proxy-agent": "^5.0.0",
     "proxy-from-env": "^1.0.0",
     "socks-proxy-agent": "^5.0.0"
   },
